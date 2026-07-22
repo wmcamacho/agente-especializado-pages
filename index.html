@@ -544,6 +544,9 @@ footer {
           </div>
           <p style="margin-top:.75rem;font-size:.88rem">El modelo base ya sabía derecho colombiano — 8.5/12 sin ningún contexto. El corpus actuó como distractor porque compite con un conocimiento mejor codificado en los pesos del modelo. El frame de gobierno fue mal calibrado para información pública: un caso pasó de 7/12 a <strong>0/12</strong> por exceso de cautela. <strong>Ninguna hipótesis se confirmó — y eso fue la información más valiosa del proyecto.</strong></p>
         </div>
+        <div class="callout warn" style="margin-top:.9rem">
+          <p><strong>El error de diseño que E-001 y E-002 dejaron al descubierto:</strong> los dos primeros experimentos midieron <em>conocimiento duro</em> — si el modelo recordaba la convención técnica, citaba el artículo correcto, nombraba el campo exacto. Eso es recuperación de información. Pero el servicio propuesto no necesita que el modelo recuerde el artículo: necesita que <strong>detecte lo que el cliente no preguntó</strong>. Un modelo puede citar perfectamente el Estatuto Tributario y aún así producir el análisis equivocado porque nunca cuestionó el planteamiento. La capacidad de reencuadrar la pregunta incorrecta, identificar el factor oculto y clasificar si el caso es rutinario o especial es cualitativamente diferente — y no está cubierta por ninguna de las métricas de E-001 o E-002. Eso es exactamente lo que E-003 mide.</p>
+        </div>
       </div>
     </div>
 
@@ -710,6 +713,136 @@ footer {
   </div>
 
   <p>La decisión de comprometer recursos significativos debería tomarse después del paso 3 de la ruta crítica — cuando haya evidencia de demanda real, no solo de viabilidad técnica.</p>
+</section>
+
+<!-- 10. DATOS ──────────────────────────────────────────────── -->
+<section class="section">
+  <h3>10 — Datos</h3>
+  <h2>Resultados completos por caso y por dimensión</h2>
+
+  <p>Las tablas muestran los puntajes reales de cada corrida. Escala 0–12 (cuatro dimensiones × máximo 3 puntos cada una). El evaluador es un modelo de lenguaje con rúbrica fija; los datos crudos y las evaluaciones completas están en el repositorio privado del proyecto.</p>
+
+  <h2 style="margin-top:1.75rem; font-size:1.1rem">E-001 — Dominio propietario · Automatizaciones Odoo (Moblicentro)</h2>
+  <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:.75rem">Dimensiones evaluadas: corrección funcional · adherencia a estándares · fundamentación documental · completitud</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Tarea</th>
+          <th class="num">L0</th>
+          <th class="num">L1</th>
+          <th class="num">L2</th>
+          <th class="num">B0</th>
+          <th class="num">Δ total</th>
+          <th class="num">Δ SOKIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>C1</td><td>Etiquetar terceros nuevos</td><td class="num">2.0</td><td class="num">12.0</td><td class="num">9.0</td><td class="num">0.0</td><td class="num">+7.0</td><td class="num">−3.0</td></tr>
+        <tr><td>C2</td><td>Generar BOM automáticamente</td><td class="num">6.0</td><td class="num">0.0</td><td class="num win">9.0</td><td class="num">6.0</td><td class="num">+3.0</td><td class="num">+9.0</td></tr>
+        <tr><td>C3</td><td>Asignar SKU por categoría</td><td class="num">4.0</td><td class="num">0.0</td><td class="num">0.0</td><td class="num">7.0</td><td class="num loss">−4.0</td><td class="num">0.0</td></tr>
+        <tr><td>C4</td><td>Asignar código a variantes</td><td class="num">8.0</td><td class="num">8.0</td><td class="num">8.0</td><td class="num">7.0</td><td class="num">0.0</td><td class="num">0.0</td></tr>
+        <tr><td>C5</td><td>Prevenir duplicados</td><td class="num">6.0</td><td class="num">6.0</td><td class="num">4.0</td><td class="num">8.0</td><td class="num loss">−2.0</td><td class="num loss">−2.0</td></tr>
+        <tr><td>C6</td><td>Alerta de aprobación de compras</td><td class="num">0.0</td><td class="num">8.0</td><td class="num win">11.0</td><td class="num">8.0</td><td class="num">+11.0</td><td class="num">+3.0</td></tr>
+        <tr><td>C7</td><td>Alias discreto en factura</td><td class="num">0.0</td><td class="num">9.0</td><td class="num">8.0</td><td class="num">7.0</td><td class="num">+8.0</td><td class="num">−1.0</td></tr>
+        <tr><td>C8</td><td>Alias discreto en venta</td><td class="num">6.0</td><td class="num">10.0</td><td class="num win">12.0</td><td class="num">8.0</td><td class="num">+6.0</td><td class="num">+2.0</td></tr>
+        <tr style="font-weight:700; background:var(--bg-inset)">
+          <td colspan="2">Media</td>
+          <td class="num">4.0</td>
+          <td class="num">6.6</td>
+          <td class="num win">7.6</td>
+          <td class="num">6.4</td>
+          <td class="num">+3.6</td>
+          <td class="num">+1.0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" style="margin-top:.75rem">
+    <table>
+      <thead>
+        <tr>
+          <th>Brazo</th>
+          <th class="num">Corrección funcional</th>
+          <th class="num">Adh. estándares</th>
+          <th class="num">Fundamentación</th>
+          <th class="num">Completitud</th>
+          <th class="num">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>L0 — modelo solo</td><td class="num">1.0</td><td class="num">1.2</td><td class="num">0.9</td><td class="num">0.9</td><td class="num">4.0</td></tr>
+        <tr><td>L1 — modelo + corpus</td><td class="num">1.6</td><td class="num">2.0</td><td class="num">1.6</td><td class="num">1.4</td><td class="num">6.6</td></tr>
+        <tr><td>L2 — modelo + corpus + SOKIA</td><td class="num win">1.9</td><td class="num win">2.4</td><td class="num">1.6</td><td class="num win">1.8</td><td class="num win">7.6</td></tr>
+        <tr><td>B0 — DeepSeek (referencia)</td><td class="num">1.4</td><td class="num">2.0</td><td class="num">1.6</td><td class="num">1.4</td><td class="num">6.4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="margin-top:2rem; font-size:1.1rem">E-002 — Dominio público · Legislación colombiana para pymes</h2>
+  <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:.75rem">Dimensiones evaluadas: precisión normativa · interpretación · aplicabilidad al caso · completitud</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Caso</th>
+          <th>Tarea</th>
+          <th class="num">L0</th>
+          <th class="num">L1</th>
+          <th class="num">L2</th>
+          <th class="num">B0</th>
+          <th class="num">Δ total</th>
+          <th class="num">Δ SOKIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>C1</td><td>IVA en muebles para el hogar</td><td class="num">8.0</td><td class="num">9.0</td><td class="num">8.0</td><td class="num win">11.0</td><td class="num">0.0</td><td class="num loss">−1.0</td></tr>
+        <tr><td>C2</td><td>Retención en la fuente — honorarios PN</td><td class="num">8.0</td><td class="num">3.0</td><td class="num">6.0</td><td class="num win">11.0</td><td class="num loss">−2.0</td><td class="num">+3.0</td></tr>
+        <tr><td>C3</td><td>Requisitos factura electrónica DIAN</td><td class="num">7.0</td><td class="num">0.0</td><td class="num">0.0</td><td class="num">4.0</td><td class="num loss">−7.0</td><td class="num">0.0</td></tr>
+        <tr><td>C4</td><td>Garantía legal mínima — bienes nuevos</td><td class="num win">12.0</td><td class="num">6.0</td><td class="num">7.0</td><td class="num">8.0</td><td class="num loss">−5.0</td><td class="num">+1.0</td></tr>
+        <tr><td>C5</td><td>Obligaciones Habeas Data</td><td class="num">7.0</td><td class="num">10.0</td><td class="num loss">0.0</td><td class="num win">11.0</td><td class="num loss">−7.0</td><td class="num loss">−10.0</td></tr>
+        <tr><td>C6</td><td>Prima de servicios — salario variable</td><td class="num">9.0</td><td class="num">9.0</td><td class="num">7.0</td><td class="num win">10.0</td><td class="num loss">−2.0</td><td class="num loss">−2.0</td></tr>
+        <tr style="font-weight:700; background:var(--bg-inset)">
+          <td colspan="2">Media</td>
+          <td class="num win">8.5</td>
+          <td class="num">6.2</td>
+          <td class="num loss">4.7</td>
+          <td class="num">9.2</td>
+          <td class="num loss">−3.8</td>
+          <td class="num loss">−1.5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap" style="margin-top:.75rem">
+    <table>
+      <thead>
+        <tr>
+          <th>Brazo</th>
+          <th class="num">Precisión normativa</th>
+          <th class="num">Interpretación</th>
+          <th class="num">Aplicabilidad</th>
+          <th class="num">Completitud</th>
+          <th class="num">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>L0 — modelo solo</td><td class="num">1.8</td><td class="num win">2.2</td><td class="num win">2.7</td><td class="num">1.8</td><td class="num">8.5</td></tr>
+        <tr><td>L1 — modelo + corpus</td><td class="num">1.5</td><td class="num">1.5</td><td class="num">1.7</td><td class="num">1.5</td><td class="num">6.2</td></tr>
+        <tr><td>L2 — modelo + corpus + SOKIA</td><td class="num loss">1.3</td><td class="num loss">1.3</td><td class="num loss">1.3</td><td class="num loss">0.7</td><td class="num loss">4.7</td></tr>
+        <tr><td>B0 — DeepSeek (referencia)</td><td class="num win">2.5</td><td class="num win">2.7</td><td class="num">2.3</td><td class="num">1.7</td><td class="num win">9.2</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout neutral" style="margin-top:1.25rem">
+    <p style="font-size:.85rem"><strong>Nota sobre los datos:</strong> cada caso se corrió una sola vez por brazo. No hay medición de varianza; los puntajes individuales tienen ruido. Los promedios y las tendencias son informativos para decisiones de dirección, no concluyentes en magnitud exacta. Las 56 respuestas crudas y sus evaluaciones completas están disponibles en el repositorio privado del proyecto.</p>
+  </div>
 </section>
 
 <footer>
