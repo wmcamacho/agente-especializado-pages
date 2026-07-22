@@ -1,0 +1,551 @@
+<title>Validación profesional de casos — Triaje legal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#f6f5f3; --card:#ffffff; --ink:#1c1c1a; --muted:#6b6862;
+    --line:#e2dfd9; --accent:#2f5d50; --accent-soft:#eaf1ee;
+    --warn:#8a5a2b; --warn-soft:#faf1e4; --radius:10px;
+    --ok:#1a5c3a; --ok-bg:#e8f5ee; --gap:#954010; --gap-bg:#fef2e8;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{ --bg:#161815; --card:#1e211d; --ink:#eceae5; --muted:#9d9a93;
+           --line:#31352e; --accent:#7fb3a1; --accent-soft:#222a26;
+           --warn:#d8a765; --warn-soft:#2a2318;
+           --ok:#5ccfa0; --ok-bg:#122a1c; --gap:#e07840; --gap-bg:#2a1a0e; }
+  }
+  *{box-sizing:border-box}
+  body{ margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; padding:0 0 80px; }
+  header{ position:sticky; top:0; z-index:10; background:var(--card);
+    border-bottom:1px solid var(--line); padding:14px 20px; }
+  .hwrap{ max-width:760px; margin:0 auto; display:flex; align-items:center; gap:16px; flex-wrap:wrap }
+  .htitle{ font-weight:600; font-size:15px; margin:0; flex:1; min-width:180px }
+  .step-label{ font-size:13px; color:var(--muted); white-space:nowrap }
+  .bar{ height:4px; background:var(--line); border-radius:3px; overflow:hidden; margin-top:10px }
+  .bar>div{ height:100%; background:var(--accent); transition:width .3s }
+  main{ max-width:760px; margin:0 auto; padding:32px 20px }
+  h1{ font-size:26px; line-height:1.25; margin:0 0 14px }
+  h2{ font-size:20px; margin:0 0 10px }
+  h3{ font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:28px 0 10px; font-weight:600 }
+  p{ margin:0 0 14px }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px; margin-bottom:20px }
+  .relato{ background:var(--accent-soft); border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0; padding:18px 20px; margin:0 0 24px; font-size:17px; line-height:1.65 }
+  .relato em{ font-style:normal; color:var(--muted); display:block; font-size:13px; margin-bottom:8px;
+    text-transform:uppercase; letter-spacing:.06em }
+  label{ display:block; font-weight:600; margin:0 0 8px; font-size:15px }
+  .hint{ font-weight:400; color:var(--muted); font-size:14px; display:block; margin-top:2px }
+  textarea,input[type=text]{ width:100%; padding:11px 13px; border:1px solid var(--line); border-radius:8px;
+    background:var(--bg); color:var(--ink); font:inherit; font-size:15px; resize:vertical }
+  textarea{ min-height:88px }
+  textarea:focus,input:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:transparent }
+  .field{ margin-bottom:22px }
+  .choices{ display:flex; gap:10px; flex-wrap:wrap }
+  .choice{ flex:1; min-width:150px; border:1px solid var(--line); border-radius:8px;
+    padding:13px 15px; cursor:pointer; background:var(--bg); font-size:15px;
+    display:flex; align-items:center; gap:9px; transition:.15s }
+  .choice:hover{ border-color:var(--accent) }
+  .choice.sel{ border-color:var(--accent); background:var(--accent-soft); font-weight:600 }
+  .choice input{ accent-color:var(--accent); margin:0 }
+  nav{ display:flex; gap:12px; justify-content:space-between; align-items:center; margin-top:28px }
+  button{ font:inherit; font-size:15px; padding:11px 22px; border-radius:8px; cursor:pointer;
+    border:1px solid var(--line); background:var(--card); color:var(--ink); transition:.15s }
+  button:hover{ border-color:var(--accent) }
+  button.primary{ background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600 }
+  button.primary:hover{ opacity:.9 }
+  .gate{ background:var(--warn-soft); border:1px solid var(--warn); border-radius:var(--radius); padding:24px }
+  .gate h2{ color:var(--warn) }
+  .tag{ display:inline-block; font-size:12px; padding:3px 9px; border-radius:20px;
+    background:var(--accent-soft); color:var(--accent); font-weight:600; letter-spacing:.03em }
+  table{ width:100%; border-collapse:collapse; margin:16px 0; font-size:15px }
+  td,th{ border-bottom:1px solid var(--line); padding:10px 8px; text-align:left; vertical-align:top }
+  th{ font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted) }
+  .saved{ font-size:13px; color:var(--muted) }
+  ol.qlist{ padding-left:20px } ol.qlist li{ margin-bottom:20px }
+  .muted{ color:var(--muted); font-size:14px }
+
+  /* ── VISTA DE RESULTADOS ── */
+  .res-header{ background:var(--accent); color:#fff; border-radius:var(--radius) var(--radius) 0 0; padding:20px 24px; margin-bottom:0 }
+  .res-header h1{ color:#fff; font-size:22px; margin:0 0 4px }
+  .res-header p{ color:rgba(255,255,255,.75); margin:0; font-size:14px }
+  .res-body{ background:var(--card); border:1px solid var(--line); border-top:none;
+    border-radius:0 0 var(--radius) var(--radius); padding:24px; margin-bottom:20px }
+  .caso-row{ border:1px solid var(--line); border-radius:8px; margin-bottom:10px; overflow:hidden }
+  .caso-top{ display:flex; align-items:center; gap:10px; padding:10px 14px; flex-wrap:wrap }
+  .caso-num{ font-weight:700; font-size:14px; white-space:nowrap }
+  .caso-clasificacion{ flex:1; font-size:13px; color:var(--muted) }
+  .pill{ font-size:11px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; white-space:nowrap }
+  .pill.ok  { background:var(--ok-bg);  color:var(--ok) }
+  .pill.gap { background:var(--gap-bg); color:var(--gap) }
+  .pill.neu { background:var(--bg);     color:var(--muted); border:1px solid var(--line) }
+  .caso-detail{ padding:10px 14px 14px; border-top:1px solid var(--line); font-size:14px; line-height:1.55; color:var(--ink) }
+  .caso-detail strong{ color:var(--muted); font-size:12px; letter-spacing:.05em; text-transform:uppercase; display:block; margin-bottom:3px }
+  .cierre-block{ margin-bottom:16px }
+  .cierre-q{ font-size:13px; font-weight:600; color:var(--muted); margin-bottom:4px }
+  .cierre-a{ font-size:14px; line-height:1.55 }
+  .share-box{ background:var(--bg); border:1px solid var(--line); border-radius:8px;
+    padding:14px 16px; margin:16px 0; display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+  .share-url{ flex:1; font-size:12px; color:var(--muted); word-break:break-all;
+    background:var(--card); border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-family:monospace }
+  .link-btn{ padding:8px 16px; font-size:13px; white-space:nowrap }
+  .coincide-ok  { color:var(--ok) }
+  .coincide-gap { color:var(--gap) }
+</style>
+
+<header>
+  <div class="hwrap">
+    <p class="htitle">Validación profesional de casos · Triaje legal</p>
+    <span class="step-label" id="stepLabel"></span>
+  </div>
+  <div class="hwrap"><div class="bar" style="flex:1"><div id="bar" style="width:0%"></div></div></div>
+</header>
+
+<main id="app"></main>
+
+<script>
+/* ── DATOS ── */
+const CASOS = [
+  {n:1,tipo:"trampa",
+   relato:"Necesito liquidar a Marcela, lleva 2 años y 3 meses conmigo, salario $1.800.000. Su rendimiento bajó mucho este año y ya decidí no seguir con ella. Ah, está embarazada de unos 4 meses pero eso es tema aparte, ella igual pensaba renunciar. ¿Cuánto le tengo que pagar de liquidación e indemnización?",
+   factor:"Fuero de maternidad: el despido requiere autorización del inspector de trabajo; sin ella sería ineficaz, con reintegro y sanción. El cálculo de la liquidación no es la pregunta pertinente.",
+   prop:"Requiere abogado"},
+  {n:2,tipo:"control",
+   relato:"Un auxiliar de bodega renunció voluntariamente por carta, llevaba 18 meses, salario fijo $2.000.000, nunca tuvo incapacidades ni procesos disciplinarios, no tiene fuero de nada. ¿Qué le debo liquidar?",
+   factor:"Sin factores especiales. Liquidación ordinaria por renuncia: cesantías, intereses, prima y vacaciones. Sin indemnización.",
+   prop:"Rutinario"},
+  {n:3,tipo:"trampa",
+   relato:"Tengo un diseñador por prestación de servicios desde hace 3 años. Viene todos los días de 8 a 6 a la oficina, le doy computador y puesto, y somos su único cliente. Quiero terminarle el contrato el mes entrante. ¿Con cuántos días debo avisarle?",
+   factor:"Indicios de relación laboral encubierta (subordinación, horario, exclusividad, medios de trabajo). El riesgo es la reclamación retroactiva de prestaciones, no el preaviso.",
+   prop:"Requiere abogado"},
+  {n:4,tipo:"trampa",
+   relato:"Compré la base de datos de un competidor que cerró, son 5.000 clientes con nombre, cédula, teléfono y correo. Voy a mandarles nuestras promociones. ¿Basta con ponerle abajo un link para desuscribirse?",
+   factor:"La autorización del titular no es transferible entre responsables; el tratamiento requiere autorización propia para esa finalidad. El link de desuscripción no resuelve el problema de fondo.",
+   prop:"Requiere abogado"},
+  {n:5,tipo:"trampa",
+   relato:"Un operario lleva 4 meses con incapacidades intermitentes. La EPS ya lo dio de alta pero él dice que sigue mal y falta seguido. Necesito el puesto ocupado. ¿Puedo terminarlo por justa causa por bajo rendimiento?",
+   factor:"Posible estabilidad laboral reforzada por condición de salud: requeriría autorización del Ministerio de Trabajo, y la justa causa alegada no sustituye ese requisito.",
+   prop:"Requiere abogado"},
+  {n:6,tipo:"control",
+   relato:"Un cliente compró una silla hace 3 meses y se le partió el soporte con uso normal. Nunca la habíamos reparado. Quiere que se la cambiemos. ¿Estamos obligados?",
+   factor:"Garantía vigente y defecto claro. El consumidor puede elegir entre reparación, cambio o devolución.",
+   prop:"Rutinario"},
+  {n:7,tipo:"trampa",
+   relato:"Tengo un gerente con salario integral de $15.000.000. Para la prima de junio calculé medio salario, o sea $7.500.000. ¿Está bien hecho el cálculo o debo incluir algo más?",
+   factor:"El salario integral ya comprende las prestaciones sociales: no procede pagar prima adicional. Validar la aritmética sería responder mal.",
+   prop:"Requiere abogado"},
+  {n:8,tipo:"trampa",
+   relato:"Vendimos muebles de outlet con un aviso visible que decía «mercancía de descuento, sin garantía». Un cliente compró hace 11 meses y reclama otra vez. Ya se lo reparamos una vez y el mueble estuvo 25 días en el taller. ¿El aviso nos cubre?",
+   factor:"La garantía legal es irrenunciable, de modo que el aviso no produce efecto; además el tiempo en reparación suspende el término, por lo que seguiría vigente.",
+   prop:"Requiere abogado"},
+  {n:9,tipo:"control",
+   relato:"Le vamos a pagar $3.000.000 a una empresa (persona jurídica) por mantenimiento de nuestras máquinas. Es un proveedor normal, con RUT y facturación electrónica. ¿Qué retención aplico?",
+   factor:"Retención ordinaria por servicios a persona jurídica declarante. Sin particularidades.",
+   prop:"Rutinario"}
+];
+const CIERRE_P1=[
+  "¿Qué tan frecuente es que un cliente le pregunte lo equivocado — es decir, que la pregunta que trae no sea la que importa?",
+  "¿Qué caso frecuente en su práctica falta en esta lista y debería estar?",
+  "Si un sistema le clasificara los casos entrantes en «rutinario» y «revíselo usted», ¿cuál sería su preocupación principal?",
+  "¿Qué tendría que contener un análisis preparado por otra persona para que usted lo revisara y lo respaldara sin rehacerlo por completo?"
+];
+const CIERRE_P2=[
+  "¿Algún caso está mal planteado jurídicamente? ¿Cuál y por qué?",
+  "¿Algún factor que se marcó como decisivo no lo es en la práctica?",
+  "En los casos marcados como rutinarios, ¿usted igual querría revisarlos? ¿Qué lo haría dudar?",
+  "¿Hay algún caso donde su respuesta cambiaría según información que el relato no da? ¿Cuál sería el dato faltante?"
+];
+
+/* ── ENCODE / DECODE ── */
+function encode(obj){
+  try{
+    const json=JSON.stringify(obj);
+    const bytes=new TextEncoder().encode(json);
+    let bin=''; bytes.forEach(b=>bin+=String.fromCharCode(b));
+    return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  }catch(e){return '';}
+}
+function decode(str){
+  try{
+    const b64=str.replace(/-/g,'+').replace(/_/g,'/');
+    const bin=atob(b64);
+    const bytes=new Uint8Array(bin.length).map((_,i)=>bin.charCodeAt(i));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }catch(e){return null;}
+}
+function getShareURL(state){
+  const base=location.href.split('#')[0];
+  return base+'#r='+encode(state);
+}
+
+/* ── MODO RESULTADOS (abre con #r=...) ── */
+function parseHash(){
+  const h=location.hash;
+  if(h.startsWith('#r=')){
+    const data=decode(h.slice(3));
+    if(data) return data;
+  }
+  return null;
+}
+
+/* ── ESTADO ── */
+const KEY="validacion_abogado_v1";
+let S=cargar();
+
+function nuevoEstado(){
+  return{sesion:{abogado:"",fecha:new Date().toISOString().slice(0,10),inicio:new Date().toISOString(),fin:null},
+    p1:{},cierre1:{},p2:{},cierre2:{},p1_cerrada:false,paso:0};
+}
+function cargar(){
+  try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):nuevoEstado();}
+  catch(e){return nuevoEstado();}
+}
+function guardar(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  const el=document.getElementById("savedMark");
+  if(el) el.textContent="Guardado "+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+}
+
+/* ── ROUTER ── */
+const TOTAL=23;
+function irA(p){S.paso=p;guardar();render();window.scrollTo({top:0,behavior:"instant"});}
+
+function render(){
+  // Si hay resultados en la URL, mostrar vista de resultados
+  const shared=parseHash();
+  if(shared){renderResultados(shared);return;}
+
+  const p=S.paso,app=document.getElementById("app");
+  document.getElementById("bar").style.width=Math.round((p/(TOTAL-1))*100)+"%";
+  const labels=["Inicio",...Array.from({length:9},(_,i)=>`Parte 1 · Caso ${i+1} de 9`),
+    "Parte 1 · Cierre","Transición",...Array.from({length:9},(_,i)=>`Parte 2 · Caso ${i+1} de 9`),
+    "Parte 2 · Cierre","Finalizado"];
+  document.getElementById("stepLabel").textContent=labels[p]||"";
+
+  if(p===0)  return app.innerHTML=vIntro();
+  if(p<=9)   return vCasoP1(app,CASOS[p-1]);
+  if(p===10) return vCierre(app,CIERRE_P1,"cierre1",9,11,"Cierre de la Parte 1");
+  if(p===11) return app.innerHTML=vGate();
+  if(p<=20)  return vCasoP2(app,CASOS[p-12]);
+  if(p===21) return vCierre(app,CIERRE_P2,"cierre2",20,22,"Preguntas finales");
+  return vExport(app);
+}
+
+/* ── VISTA RESULTADOS (modo lectura) ── */
+function renderResultados(data){
+  document.getElementById("bar").style.width="100%";
+  document.getElementById("stepLabel").textContent="Resultados";
+  const abogado=data.sesion?.abogado||"—";
+  const fecha=data.sesion?.fecha||"—";
+  const p1=data.parte1||data.p1||{};
+  const p2=data.parte2||data.p2||{};
+  const c1=data.cierre_parte1||data.cierre1||{};
+  const c2=data.cierre_parte2||data.cierre2||{};
+
+  const coincide=CASOS.filter(c=>p1[c.n]&&p1[c.n].b===c.prop).length;
+  const avalados=CASOS.filter(c=>p2[c.n]&&p2[c.n].v==="Correcto").length;
+  const trampas=CASOS.filter(c=>c.tipo==="trampa");
+  const controles=CASOS.filter(c=>c.tipo==="control");
+  const trampasBien=trampas.filter(c=>p1[c.n]?.b===c.prop).length;
+  const controlesBien=controles.filter(c=>p1[c.n]?.b===c.prop).length;
+
+  let html=`
+  <div class="res-header">
+    <h1>Resultados de la sesión</h1>
+    <p>${abogado} · ${fecha}</p>
+  </div>
+  <div class="res-body">
+    <h3>Resumen de clasificación (Parte 1)</h3>
+    <table>
+      <tr><th>Métrica</th><th>Resultado</th></tr>
+      <tr><td>Coincidencia total</td><td><strong>${coincide} de 9</strong></td></tr>
+      <tr><td>Casos trampa detectados (requieren abogado)</td><td><strong>${trampasBien} de ${trampas.length}</strong></td></tr>
+      <tr><td>Casos control correctos (rutinarios)</td><td><strong>${controlesBien} de ${controles.length}</strong></td></tr>
+      <tr><td>Análisis avalados (Parte 2)</td><td><strong>${avalados} de 9</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Caso por caso — Parte 1 vs Parte 2</h3>`;
+
+  CASOS.forEach(c=>{
+    const r1=p1[c.n]||{};
+    const r2=p2[c.n]||{};
+    const coinci=r1.b===c.prop;
+    const verdPill=r2.v==="Correcto"?'ok':r2.v==="Incorrecto"?'gap':'neu';
+    html+=`<div class="caso-row">
+      <div class="caso-top">
+        <span class="caso-num">Caso ${c.n}</span>
+        <span class="caso-clasificacion">
+          Clasificó: <strong>${r1.b||'—'}</strong>
+          ${coinci?'<span class="coincide-ok">✓ coincide</span>':'<span class="coincide-gap">✗ difiere</span>'}
+          · Propuesto: ${c.prop}
+        </span>
+        ${r2.v?`<span class="pill ${verdPill}">${r2.v}</span>`:''}
+      </div>`;
+    if(r1.a||r1.c||r2.com){
+      html+=`<div class="caso-detail">`;
+      if(r1.a) html+=`<strong>Revisaría</strong>${esc(r1.a)}<br><br>`;
+      if(r1.c) html+=`<strong>Frecuencia</strong>${esc(r1.c)}<br><br>`;
+      if(r2.com) html+=`<strong>Comentario Parte 2</strong>${esc(r2.com)}`;
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+
+  html+=`</div>
+
+  <div class="card">
+    <h3>Preguntas de cierre — Parte 1</h3>`;
+  CIERRE_P1.forEach((q,i)=>{
+    html+=`<div class="cierre-block">
+      <div class="cierre-q">${esc(q)}</div>
+      <div class="cierre-a">${esc(c1[i])||'<span style="color:var(--muted)">Sin respuesta</span>'}</div>
+    </div>`;
+  });
+  html+=`</div>
+
+  <div class="card">
+    <h3>Preguntas finales — Parte 2</h3>`;
+  CIERRE_P2.forEach((q,i)=>{
+    html+=`<div class="cierre-block">
+      <div class="cierre-q">${esc(q)}</div>
+      <div class="cierre-a">${esc(c2[i])||'<span style="color:var(--muted)">Sin respuesta</span>'}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  document.getElementById("app").innerHTML=html;
+}
+
+/* ── VISTAS DEL FORMULARIO ── */
+function vIntro(){
+  return`<div class="card">
+    <h1>Validación profesional de casos</h1>
+    <p>Estoy desarrollando un sistema de <strong>triaje legal asistido</strong>. No pretende dar asesoría ni reemplazar a un abogado: su función es recibir un caso tal como lo cuenta un cliente y determinar dos cosas —</p>
+    <p>1. si hay algún factor jurídico que el cliente no mencionó como relevante pero que cambia el análisis, y<br>
+       2. si el caso es un trámite estándar o requiere revisión profesional antes de actuar.</p>
+    <p>Para medir si el sistema sirve, necesito casos de prueba <strong>jurídicamente correctos</strong>. De ahí esta consulta: necesito criterio profesional, no una opinión de cortesía.</p>
+    <h3>Cómo funciona</h3>
+    <p>Son <strong>dos partes</strong>. En la primera leerá nueve relatos y responderá tres preguntas sobre cada uno, sin ver ningún análisis previo. En la segunda se le mostrará el análisis propuesto para que lo corrija.</p>
+    <p class="muted">El orden importa: una vez cerrada la Parte 1 no podrá volver a editarla. Es intencional — si viera antes el análisis, ya no sabríamos si usted habría llegado por su cuenta a la misma lectura.</p>
+    <p class="muted">Los relatos son construidos. No contienen datos de clientes reales. Las respuestas se guardan solo en este navegador.</p>
+    <div class="field" style="margin-top:26px">
+      <label>Nombre de quien responde <span class="hint">Para identificar los resultados.</span></label>
+      <input type="text" id="fAbogado" value="${esc(S.sesion.abogado)}" placeholder="Nombre y apellido">
+    </div>
+    <nav><span></span>
+      <button class="primary" onclick="S.sesion.abogado=document.getElementById('fAbogado').value;irA(1)">Comenzar Parte 1 →</button>
+    </nav>
+  </div>
+  ${S.p1&&Object.keys(S.p1).length?`<p class="muted" style="text-align:center">Hay una sesión guardada.
+    <button style="padding:4px 12px;font-size:13px;margin-left:8px" onclick="if(confirm('¿Borrar respuestas guardadas y empezar de cero?')){S=nuevoEstado();guardar();render();}">Empezar de cero</button></p>`:''}`;
+}
+
+function vCasoP1(app,c){
+  const r=S.p1[c.n]||{};
+  app.innerHTML=`<div class="card">
+    <span class="tag">Caso ${c.n} de 9</span>
+    <div class="relato" style="margin-top:16px"><em>El cliente dice</em>«${esc(c.relato)}»</div>
+    <div class="field">
+      <label>a) ¿Qué es lo primero que usted revisaría?</label>
+      <textarea id="qa">${esc(r.a||"")}</textarea>
+    </div>
+    <div class="field">
+      <label>b) ¿Trámite rutinario, o requiere que un abogado lo mire antes de actuar?</label>
+      <div class="choices">
+        <label class="choice ${r.b==='Rutinario'?'sel':''}"><input type="radio" name="qb" value="Rutinario" ${r.b==='Rutinario'?'checked':''}> Rutinario</label>
+        <label class="choice ${r.b==='Requiere abogado'?'sel':''}"><input type="radio" name="qb" value="Requiere abogado" ${r.b==='Requiere abogado'?'checked':''}> Requiere abogado</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>c) ¿Le ha llegado un caso parecido? ¿Con qué frecuencia? <span class="hint">Opcional.</span></label>
+      <textarea id="qc" style="min-height:60px">${esc(r.c||"")}</textarea>
+    </div>
+    <nav>
+      <button onclick="grabarP1(${c.n});irA(${c.n===1?0:c.n-1})">← Anterior</button>
+      <span class="saved" id="savedMark"></span>
+      <button class="primary" onclick="grabarP1(${c.n});irA(${c.n+1})">${c.n===9?"Terminar Parte 1 →":"Siguiente →"}</button>
+    </nav>
+  </div>`;
+  bindRadios("qb");
+  app.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",()=>grabarP1(c.n)));
+}
+function grabarP1(n){
+  const a=document.getElementById("qa"),c=document.getElementById("qc"),b=document.querySelector("input[name=qb]:checked");
+  if(!a)return;
+  S.p1[n]={a:a.value,b:b?b.value:"",c:c?c.value:""};
+  guardar();
+}
+
+function vCasoP2(app,c){
+  const r=S.p2[c.n]||{};
+  app.innerHTML=`<div class="card">
+    <span class="tag">Contraste · Caso ${c.n} de 9</span>
+    <div class="relato" style="margin-top:16px"><em>El cliente dice</em>«${esc(c.relato)}»</div>
+    ${vSuRespuesta(c.n)}
+    <h3>Análisis propuesto</h3>
+    <div class="card" style="margin:0 0 22px;background:var(--bg)">
+      <p style="margin-bottom:10px">${esc(c.factor)}</p>
+      <p style="margin:0"><strong>Clasificación propuesta:</strong> ${c.prop}</p>
+    </div>
+    <div class="field">
+      <label>¿Es jurídicamente correcto?</label>
+      <div class="choices">
+        ${["Correcto","Requiere matiz","Incorrecto"].map(v=>
+          `<label class="choice ${r.v===v?'sel':''}"><input type="radio" name="qv" value="${v}" ${r.v===v?'checked':''}> ${v}</label>`).join("")}
+      </div>
+    </div>
+    <div class="field">
+      <label>Corrección o comentario <span class="hint">Si algo está mal o incompleto, aquí sirve más.</span></label>
+      <textarea id="qcom">${esc(r.com||"")}</textarea>
+    </div>
+    <nav>
+      <button onclick="grabarP2(${c.n});irA(${c.n===1?11:c.n+10})">← Anterior</button>
+      <span class="saved" id="savedMark"></span>
+      <button class="primary" onclick="grabarP2(${c.n});irA(${c.n+12})">${c.n===9?"Preguntas finales →":"Siguiente →"}</button>
+    </nav>
+  </div>`;
+  bindRadios("qv");
+  document.getElementById("qcom").addEventListener("input",()=>grabarP2(c.n));
+}
+function vSuRespuesta(n){
+  const r=S.p1[n];if(!r)return"";
+  return`<h3>Lo que usted respondió</h3>
+    <div class="card" style="margin:0 0 22px;background:var(--bg)">
+      <p style="margin-bottom:8px"><strong>Revisaría:</strong> ${esc(r.a)||"<span class='muted'>(sin respuesta)</span>"}</p>
+      <p style="margin:0"><strong>Clasificó como:</strong> ${esc(r.b)||"<span class='muted'>(sin respuesta)</span>"}</p>
+    </div>`;
+}
+function grabarP2(n){
+  const v=document.querySelector("input[name=qv]:checked"),com=document.getElementById("qcom");
+  if(!com)return;
+  S.p2[n]={v:v?v.value:"",com:com.value};
+  guardar();
+}
+
+function vCierre(app,preguntas,bucket,prev,next,titulo){
+  const r=S[bucket]||{};
+  app.innerHTML=`<div class="card">
+    <h2>${titulo}</h2>
+    <ol class="qlist">${preguntas.map((q,i)=>`
+      <li><label>${esc(q)}</label><textarea data-i="${i}">${esc(r[i]||"")}</textarea></li>`).join("")}
+    </ol>
+    <nav>
+      <button onclick="irA(${prev})">← Anterior</button>
+      <span class="saved" id="savedMark"></span>
+      <button class="primary" onclick="irA(${next})">Continuar →</button>
+    </nav>
+  </div>`;
+  app.querySelectorAll("textarea").forEach(t=>{
+    t.addEventListener("input",()=>{S[bucket][t.dataset.i]=t.value;guardar();});
+  });
+}
+
+function vGate(){
+  const faltan=CASOS.filter(c=>!S.p1[c.n]||!S.p1[c.n].b).map(c=>c.n);
+  return`<div class="gate">
+    <h2>Antes de continuar</h2>
+    <p>Va a pasar a la <strong>Parte 2</strong>, donde se muestra el análisis propuesto para cada caso.</p>
+    <p><strong>Una vez que continúe, la Parte 1 queda cerrada</strong> y no podrá modificar sus respuestas anteriores. Esto es deliberado.</p>
+    ${faltan.length?`<p style="color:var(--warn)"><strong>Casos sin clasificar:</strong> ${faltan.join(", ")}. Puede volver a completarlos.</p>`:""}
+    <nav>
+      <button onclick="irA(10)">← Volver a revisar</button>
+      <button class="primary" onclick="S.p1_cerrada=true;irA(12)">Cerrar Parte 1 y continuar →</button>
+    </nav>
+  </div>`;
+}
+
+function vExport(app){
+  S.sesion.fin=S.sesion.fin||new Date().toISOString();
+  guardar();
+  const coincide=CASOS.filter(c=>S.p1[c.n]&&S.p1[c.n].b===c.prop).length;
+  const correctos=CASOS.filter(c=>S.p2[c.n]&&S.p2[c.n].v==="Correcto").length;
+  const objetados=CASOS.filter(c=>S.p2[c.n]&&S.p2[c.n].v&&S.p2[c.n].v!=="Correcto");
+
+  // Construir payload para el enlace
+  const payload={
+    sesion:S.sesion,
+    parte1:S.p1,cierre_parte1:S.cierre1,
+    parte2:S.p2,cierre_parte2:S.cierre2
+  };
+  const shareURL=getShareURL(payload);
+
+  app.innerHTML=`<div class="card">
+    <h1>Sesión completada</h1>
+    <p>Gracias. Comparta los resultados con el enlace de abajo — quien lo abra verá todo sin necesidad de descargar archivos.</p>
+    <table>
+      <tr><th>Coincidencia de clasificación</th><td><strong>${coincide} de 9</strong> casos clasificados igual que la propuesta</td></tr>
+      <tr><th>Análisis avalados</th><td><strong>${correctos} de 9</strong> marcados como correctos</td></tr>
+      <tr><th>Con observación</th><td>${objetados.length?objetados.map(c=>`Caso ${c.n} (${S.p2[c.n].v})`).join(" · "):"ninguno"}</td></tr>
+    </table>
+
+    <h3 style="margin-top:24px">Enlace de resultados</h3>
+    <p style="font-size:14px;color:var(--muted)">Copie este enlace y envíelo por WhatsApp o correo. Al abrirlo se verán todos los resultados directamente en el navegador.</p>
+    <div class="share-box">
+      <div class="share-url" id="shareURL">${shareURL}</div>
+      <button class="primary link-btn" onclick="copiarURL()">Copiar enlace</button>
+    </div>
+    <p class="muted" id="copiadoMsg" style="display:none;color:var(--accent)">¡Enlace copiado! Puede pegarlo en WhatsApp.</p>
+
+    <h3>¿Prefiere un archivo?</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+      <button onclick="dlJSON()">Descargar .json</button>
+      <button onclick="dlMD()">Descargar .md</button>
+    </div>
+    <nav style="margin-top:20px">
+      <button onclick="irA(21)">← Volver</button>
+      <button onclick="if(confirm('¿Borrar las respuestas de este navegador?')){localStorage.removeItem(KEY);S=nuevoEstado();render();}">Borrar datos locales</button>
+    </nav>
+  </div>`;
+}
+
+function copiarURL(){
+  const url=document.getElementById("shareURL").textContent;
+  navigator.clipboard.writeText(url).then(()=>{
+    const msg=document.getElementById("copiadoMsg");
+    msg.style.display="block";
+    setTimeout(()=>msg.style.display="none",3000);
+  }).catch(()=>alert("Seleccione el texto del enlace y cópielo manualmente."));
+}
+
+function slug(){return(S.sesion.abogado||"abogado").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"_"+S.sesion.fecha;}
+function baja(txt,ext,mime){
+  const b=new Blob([txt],{type:mime}),u=URL.createObjectURL(b),a=document.createElement("a");
+  a.href=u;a.download=`validacion_${slug()}.${ext}`;a.click();URL.revokeObjectURL(u);
+}
+function dlJSON(){
+  baja(JSON.stringify({sesion:S.sesion,parte1:S.p1,cierre_parte1:S.cierre1,
+    parte2:S.p2,cierre_parte2:S.cierre2,casos:CASOS.map(c=>({n:c.n,tipo:c.tipo,prop:c.prop}))},null,2),"json","application/json");
+}
+function dlMD(){
+  let o=`# Validación profesional de casos\n\n**Abogado:** ${S.sesion.abogado}\n**Fecha:** ${S.sesion.fecha}\n\n---\n\n## Parte 1\n\n`;
+  CASOS.forEach(c=>{const r=S.p1[c.n]||{};
+    o+=`### Caso ${c.n} ${r.b===c.prop?"✔":"✖"}\n\n> ${c.relato}\n\n- Revisaría: ${r.a||"—"}\n- Clasificó: ${r.b||"—"} (propuesto: ${c.prop})\n- Frecuencia: ${r.c||"—"}\n\n`;});
+  o+=`## Cierre Parte 1\n\n`;
+  CIERRE_P1.forEach((p,i)=>o+=`**${p}**\n\n${(S.cierre1||{})[i]||"—"}\n\n`);
+  o+=`---\n\n## Parte 2\n\n`;
+  CASOS.forEach(c=>{const r=S.p2[c.n]||{};
+    o+=`### Caso ${c.n} — ${r.v||"sin veredicto"}\n\n${c.factor}\n\n**Comentario:** ${r.com||"—"}\n\n`;});
+  o+=`## Preguntas finales\n\n`;
+  CIERRE_P2.forEach((p,i)=>o+=`**${p}**\n\n${(S.cierre2||{})[i]||"—"}\n\n`);
+  baja(o,"md","text/markdown");
+}
+
+function bindRadios(name){
+  document.querySelectorAll(`input[name=${name}]`).forEach(r=>{
+    r.addEventListener("change",()=>{
+      document.querySelectorAll(`input[name=${name}]`).forEach(x=>x.closest(".choice").classList.toggle("sel",x.checked));
+      const p=S.paso;
+      if(p>=1&&p<=9)grabarP1(p);else if(p>=12&&p<=20)grabarP2(p-11);
+    });
+  });
+}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));}
+
+window.addEventListener("beforeunload",e=>{
+  if(!parseHash()&&S.paso>0&&S.paso<22){e.preventDefault();e.returnValue="";}
+});
+
+render();
+</script>

@@ -1,0 +1,729 @@
+<title>Reporte Técnico — Agente Especializado SOKIA</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --bg:           #F3F4F1;
+  --bg-surface:   #FFFFFF;
+  --bg-inset:     #EAECE7;
+  --text:         #191C17;
+  --text-muted:   #5A6056;
+  --border:       #CAD0C6;
+  --accent:       #1A5C3A;
+  --accent-mid:   #267A50;
+  --accent-glow:  #3DB87A;
+  --ok-bg:        #E8F5EE;
+  --ok-fg:        #1A5C3A;
+  --gap-bg:       #FEF2E8;
+  --gap-fg:       #954010;
+  --pending-bg:   #F0F1EE;
+  --pending-fg:   #5A6056;
+  --code-bg:      #E5E8E2;
+  --tl-line:      #C0C9BB;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #131512;
+    --bg-surface:   #1A1D19;
+    --bg-inset:     #161914;
+    --text:         #DDE1D8;
+    --text-muted:   #7A847A;
+    --border:       #272E25;
+    --accent:       #3DB87A;
+    --accent-mid:   #30A068;
+    --accent-glow:  #5CCFA0;
+    --ok-bg:        #122A1C;
+    --ok-fg:        #5CCFA0;
+    --gap-bg:       #2A1A0E;
+    --gap-fg:       #E07840;
+    --pending-bg:   #1A1D19;
+    --pending-fg:   #7A847A;
+    --code-bg:      #161914;
+    --tl-line:      #2E3830;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#131512; --bg-surface:#1A1D19; --bg-inset:#161914;
+  --text:#DDE1D8; --text-muted:#7A847A; --border:#272E25;
+  --accent:#3DB87A; --accent-mid:#30A068; --accent-glow:#5CCFA0;
+  --ok-bg:#122A1C; --ok-fg:#5CCFA0; --gap-bg:#2A1A0E; --gap-fg:#E07840;
+  --pending-bg:#1A1D19; --pending-fg:#7A847A; --code-bg:#161914; --tl-line:#2E3830;
+}
+:root[data-theme="light"] {
+  --bg:#F3F4F1; --bg-surface:#FFFFFF; --bg-inset:#EAECE7;
+  --text:#191C17; --text-muted:#5A6056; --border:#CAD0C6;
+  --accent:#1A5C3A; --accent-mid:#267A50; --accent-glow:#3DB87A;
+  --ok-bg:#E8F5EE; --ok-fg:#1A5C3A; --gap-bg:#FEF2E8; --gap-fg:#954010;
+  --pending-bg:#F0F1EE; --pending-fg:#5A6056; --code-bg:#E5E8E2; --tl-line:#C0C9BB;
+}
+
+/* ── RESET ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.25rem 5rem;
+}
+
+/* ── TYPE ────────────────────────────────────────────────────────── */
+h1 {
+  font-family: Cambria, Georgia, serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  color: var(--text);
+  margin-bottom: .6rem;
+}
+h2 {
+  font-family: Cambria, Georgia, serif;
+  font-size: clamp(1.25rem, 4vw, 1.6rem);
+  font-weight: 700;
+  line-height: 1.2;
+  text-wrap: balance;
+  color: var(--text);
+  margin: 0 0 .75rem;
+}
+h3 {
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 .4rem;
+}
+p { margin-bottom: 1rem; }
+p:last-child { margin-bottom: 0; }
+strong { font-weight: 600; }
+
+/* ── TOP BAR ─────────────────────────────────────────────────────── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 0; border-bottom: 1px solid var(--border); margin-bottom: 0;
+}
+.topbar-brand {
+  font-size: .78rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent);
+}
+.theme-btn {
+  background: none; border: 1px solid var(--border); border-radius: 6px;
+  color: var(--text-muted); font-size: .75rem; padding: .25rem .65rem;
+  cursor: pointer; font-family: inherit; transition: border-color .2s;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── HERO ────────────────────────────────────────────────────────── */
+.hero {
+  padding: 3rem 0 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.hero-eyebrow {
+  font-size: .78rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 1rem;
+}
+.hero-sub {
+  font-size: 1.1rem; color: var(--text-muted);
+  max-width: 54ch; margin-top: .75rem; line-height: 1.6;
+}
+.hero-meta {
+  display: flex; flex-wrap: wrap; gap: .4rem 1.2rem;
+  margin-top: 1.5rem; font-size: .8rem; color: var(--text-muted);
+  border-top: 1px solid var(--border); padding-top: 1rem;
+}
+.hero-meta span { display: flex; align-items: center; gap: .35rem; }
+
+/* ── SECTION ─────────────────────────────────────────────────────── */
+.section {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.section:last-of-type { border-bottom: none; }
+
+/* ── CALLOUT ─────────────────────────────────────────────────────── */
+.callout {
+  background: var(--ok-bg); border-left: 4px solid var(--ok-fg);
+  border-radius: 0 8px 8px 0; padding: 1.1rem 1.3rem; margin: 1.25rem 0;
+}
+.callout.warn { background: var(--gap-bg); border-left-color: var(--gap-fg); }
+.callout.neutral { background: var(--bg-surface); border-left-color: var(--border); border: 1px solid var(--border); border-left-width: 4px; }
+.callout p { font-size: .95rem; }
+
+/* ── MARKET CARDS ────────────────────────────────────────────────── */
+.market-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.25rem 0;
+}
+@media (max-width: 480px) { .market-grid { grid-template-columns: 1fr; } }
+.market-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1rem 1.15rem;
+}
+.market-card-label {
+  font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: .4rem;
+}
+.market-card-verdict {
+  font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: .35rem;
+}
+.market-card p { font-size: .85rem; color: var(--text-muted); }
+.market-card.ok .market-card-verdict { color: var(--ok-fg); }
+.market-card.gap .market-card-verdict { color: var(--gap-fg); }
+
+/* ── HYPOTHESIS BOX ──────────────────────────────────────────────── */
+.hypothesis {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.5rem 1.6rem; margin: 1.5rem 0;
+}
+.hypothesis-q {
+  font-family: Cambria, Georgia, serif;
+  font-size: 1.1rem; line-height: 1.5; font-style: italic;
+  color: var(--text); margin-bottom: 1rem;
+}
+.hypothesis-implication {
+  font-size: .88rem; color: var(--text-muted);
+  background: var(--bg-inset); border-radius: 6px; padding: .75rem 1rem;
+}
+
+/* ── DOMAIN CARDS ────────────────────────────────────────────────── */
+.domain-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin: 1.25rem 0;
+}
+@media (max-width: 480px) { .domain-grid { grid-template-columns: 1fr; } }
+.domain-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1.1rem 1.2rem;
+}
+.domain-card-tag {
+  font-size: .7rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; background: var(--bg-inset);
+  color: var(--text-muted); padding: .2rem .6rem; border-radius: 20px;
+  display: inline-block; margin-bottom: .6rem;
+}
+.domain-card-title { font-weight: 700; font-size: .95rem; margin-bottom: .3rem; }
+.domain-card p { font-size: .83rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ── ARMS TABLE ──────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1.25rem 0; border-radius: 8px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: .87rem; font-variant-numeric: tabular-nums; }
+thead { background: var(--bg-inset); }
+th { text-align: left; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); padding: .65rem 1rem; border-bottom: 1px solid var(--border); }
+td { padding: .65rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+.num { font-variant-numeric: tabular-nums; }
+.win { font-weight: 700; color: var(--ok-fg); }
+.loss { color: var(--gap-fg); }
+
+/* ── TIMELINE ────────────────────────────────────────────────────── */
+.timeline { margin: 2rem 0; }
+.tl-item { display: grid; grid-template-columns: 28px 1fr; gap: 0 1rem; margin-bottom: 0; }
+.tl-spine { display: flex; flex-direction: column; align-items: center; }
+.tl-dot {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--border); background: var(--bg); z-index: 1;
+  margin-top: 4px;
+}
+.tl-dot.ok    { background: var(--ok-fg);  border-color: var(--ok-fg); }
+.tl-dot.gap   { background: var(--gap-fg); border-color: var(--gap-fg); }
+.tl-dot.open  { background: var(--bg-surface); border-color: var(--tl-line); border-width: 2px; }
+.tl-line-seg { width: 2px; flex: 1; background: var(--tl-line); min-height: 24px; }
+.tl-item:last-child .tl-line-seg { display: none; }
+.tl-body { padding-bottom: 2rem; }
+.tl-header { display: flex; align-items: flex-start; gap: .75rem; flex-wrap: wrap; margin-bottom: .6rem; }
+.tl-label { font-weight: 700; font-size: 1rem; line-height: 1.3; }
+.tl-badge {
+  font-size: .7rem; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; padding: .18rem .6rem; border-radius: 20px;
+  white-space: nowrap; margin-top: 2px;
+}
+.tl-badge.ok      { background: var(--ok-bg);      color: var(--ok-fg); }
+.tl-badge.gap     { background: var(--gap-bg);      color: var(--gap-fg); }
+.tl-badge.pending { background: var(--pending-bg);  color: var(--pending-fg); }
+.tl-context {
+  font-size: .83rem; color: var(--text-muted); margin-bottom: .75rem; line-height: 1.5;
+}
+.tl-finding {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: .9rem 1rem; font-size: .88rem; line-height: 1.55;
+}
+.tl-finding strong { display: block; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .3rem; }
+.tl-scores {
+  display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem;
+}
+.score-pill {
+  font-size: .8rem; font-variant-numeric: tabular-nums;
+  padding: .2rem .65rem; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--bg-inset);
+}
+.score-pill.win { background: var(--ok-bg); color: var(--ok-fg); border-color: var(--ok-fg); font-weight: 700; }
+.score-pill.loss { background: var(--gap-bg); color: var(--gap-fg); border-color: var(--gap-fg); }
+
+/* ── FINDING BOX ─────────────────────────────────────────────────── */
+.finding-box {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; margin: 1.5rem 0;
+}
+.finding-box-header {
+  background: var(--accent); color: #fff; padding: .75rem 1.3rem;
+  font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+}
+.finding-box-body { padding: 1.25rem 1.3rem; }
+.finding-box-body p { font-size: .98rem; }
+
+/* ── SPECIALIST GRID ─────────────────────────────────────────────── */
+.spec-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: .75rem; margin: 1.25rem 0;
+}
+.spec-card {
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-top: 3px solid var(--accent); border-radius: 8px;
+  padding: 1rem 1.1rem;
+}
+.spec-icon { font-size: 1.25rem; margin-bottom: .4rem; }
+.spec-title { font-weight: 700; font-size: .95rem; margin-bottom: .25rem; }
+.spec-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.45; }
+
+/* ── LAWYER MODEL ────────────────────────────────────────────────── */
+.phase-list { display: flex; flex-direction: column; gap: .6rem; margin: 1.1rem 0; }
+.phase-item {
+  display: flex; gap: 1rem; align-items: flex-start;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: .9rem 1rem;
+}
+.phase-num {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--accent); color: #fff; font-size: .8rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.phase-text { font-size: .9rem; line-height: 1.55; }
+.phase-text strong { display: block; margin-bottom: .15rem; }
+
+/* ── STATUS GRID ─────────────────────────────────────────────────── */
+.status-list { display: flex; flex-direction: column; gap: .5rem; margin: 1.1rem 0; }
+.status-row {
+  display: flex; align-items: center; gap: .75rem;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: .6rem .9rem; font-size: .9rem;
+}
+.status-label { flex: 1; }
+.status-tag {
+  font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; padding: .15rem .55rem; border-radius: 3px; white-space: nowrap;
+}
+.tag-done    { background: var(--ok-bg);      color: var(--ok-fg); }
+.tag-blocked { background: var(--gap-bg);     color: var(--gap-fg); }
+.tag-pending { background: var(--pending-bg); color: var(--pending-fg); }
+
+/* ── RISK LIST ───────────────────────────────────────────────────── */
+.risk-list { display: flex; flex-direction: column; gap: .6rem; margin: 1.1rem 0; }
+.risk-item {
+  display: flex; gap: .85rem; align-items: flex-start;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: .8rem 1rem; font-size: .9rem; line-height: 1.55;
+}
+.risk-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: .58rem; }
+.risk-dot.h { background: var(--gap-fg); }
+.risk-dot.m { background: #D09030; }
+.risk-dot.l { background: var(--ok-fg); }
+
+/* ── FOOTER ──────────────────────────────────────────────────────── */
+footer {
+  margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+  font-size: .78rem; color: var(--text-muted); text-align: center; line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="topbar-brand">Agente Especializado · SOKIA</span>
+  <button class="theme-btn" onclick="toggleTheme()">☾ / ☀</button>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-eyebrow">Reporte de viabilidad técnica · Versión 1.0</div>
+  <h1>Inteligencia artificial gobernada para servicios legales especializados</h1>
+  <p class="hero-sub">Una exploración que probó dónde la IA local supera a los modelos comerciales, qué líneas de producto descartar antes de invertir, y hacia dónde apunta la evidencia.</p>
+  <div class="hero-meta">
+    <span>22 de julio de 2026</span>
+    <span>56 pruebas controladas</span>
+    <span>2 dominios evaluados</span>
+    <span>Confidencial</span>
+  </div>
+</header>
+
+<!-- 01. VISIÓN ────────────────────────────────────────────── -->
+<section class="section">
+  <h3>01 — La visión</h3>
+  <h2>El problema no es acceso a información legal. Es acceso a criterio.</h2>
+
+  <p>Las empresas pequeñas en Colombia cometen errores legales costosos no porque no puedan consultar la ley, sino porque <strong>no saben qué deberían haber preguntado</strong>. Un empresario que liquida a una empleada embarazada no ignora que existe el fuero de maternidad — simplemente nunca lo conectó con su caso porque formuló la pregunta equivocada.</p>
+
+  <p>La oportunidad no es reemplazar al abogado. Es actuar <strong>antes</strong> que el abogado: recibir el caso tal como llega, detectar los factores que el cliente no mencionó como relevantes, y determinar si el caso es un trámite estándar o requiere revisión profesional antes de actuar.</p>
+
+  <p>Eso es triaje. Y ese servicio no existe en el mercado colombiano en una forma accesible, confiable y trazable.</p>
+</section>
+
+<!-- 02. ANÁLISIS PREVIO ───────────────────────────────────── -->
+<section class="section">
+  <h3>02 — Análisis de mercado previo</h3>
+  <h2>Lo que la exploración inicial descartó y lo que encontró</h2>
+
+  <p>Antes de desarrollar cualquier tecnología se evaluó el panorama de posibilidades. Estas fueron las conclusiones que determinaron la dirección:</p>
+
+  <div class="market-grid">
+    <div class="market-card gap">
+      <div class="market-card-label">Descartado</div>
+      <div class="market-card-verdict">Generación de documentos</div>
+      <p>Mercado saturado con proveedores establecidos en Colombia. Propuesta de valor commoditizada. Precio a la baja.</p>
+    </div>
+    <div class="market-card gap">
+      <div class="market-card-label">Descartado</div>
+      <div class="market-card-verdict">Información legal general</div>
+      <p>ChatGPT ya lo hace con 9.2/12 en nuestras propias pruebas. Competir aquí es inviable por definición.</p>
+    </div>
+    <div class="market-card ok">
+      <div class="market-card-label">Viable</div>
+      <div class="market-card-verdict">Triaje y detección de riesgo</div>
+      <p>Poco ocupado. Alto valor por caso. No compite con la IA gratuita — la complementa con criterio y respaldo profesional.</p>
+    </div>
+    <div class="market-card gap">
+      <div class="market-card-label">Fuera de alcance</div>
+      <div class="market-card-verdict">Asesoría sobre caso concreto</div>
+      <p>Actividad reservada por ley a abogados matriculados. Zona regulada con responsabilidad profesional.</p>
+    </div>
+  </div>
+
+  <div class="callout neutral">
+    <p><strong>El hallazgo que reencuadró todo:</strong> la IA general gratuita educa al mercado sin costo para nosotros. Quien consulta y descubre aristas llega mucho mejor preparado al siguiente escalón — que es exactamente donde está el servicio propuesto.</p>
+  </div>
+
+  <h2 style="margin-top:1.75rem">La dirección: especialistas operativos, no un abogado virtual</h2>
+
+  <p>La conclusión más importante del análisis previo fue de producto, no de tecnología: <strong>las empresas compran soluciones que resuelven procesos completos dentro de un dominio</strong>, no herramientas aisladas para generar un documento. De ahí la orientación hacia especialistas operativos.</p>
+
+  <div class="spec-grid">
+    <div class="spec-card">
+      <div class="spec-icon">👔</div>
+      <div class="spec-title">Contratación laboral</div>
+      <div class="spec-desc">Vinculación, liquidaciones, fueros, estabilidad reforzada, prestaciones, causales de terminación.</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">🏢</div>
+      <div class="spec-title">Arrendamientos</div>
+      <div class="spec-desc">Contratos, cánones, incumplimientos, restitución, depósitos, renovaciones forzadas.</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">🏗️</div>
+      <div class="spec-title">Propiedad horizontal</div>
+      <div class="spec-desc">Reglamentos, cuotas de administración, convocatorias, sanciones, servidumbres.</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">⚖️</div>
+      <div class="spec-title">Sucesiones</div>
+      <div class="spec-desc">Herencias, legados, declaración de causante, liquidación de sociedad conyugal.</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-icon">📋</div>
+      <div class="spec-title">Procesos ejecutivos</div>
+      <div class="spec-desc">Títulos valores, cobro de cartera, mandamientos de pago, embargos y secuestros.</div>
+    </div>
+  </div>
+
+  <p style="margin-top:.5rem">Cada especialista conoce el flujo completo de su área. El gobierno SOKIA se calibra por dominio: qué preguntar, qué factores detectar, cómo clasificar, qué escalar. La especialización es la que hace la detección precisa — un agente general no tiene la estructura de razonamiento para saber que en contratación laboral la condición de salud del trabajador cambia todo el análisis.</p>
+</section>
+
+<!-- 03. HIPÓTESIS ─────────────────────────────────────────── -->
+<section class="section">
+  <h3>03 — La hipótesis técnica</h3>
+  <h2>¿Puede un modelo pequeño gobernado superar a uno grande comercial?</h2>
+
+  <p>Para que el servicio sea viable a escala, el modelo de IA no puede cobrar por cada consulta ni recibir información confidencial de clientes. La solución técnica propuesta fue usar un modelo pequeño ejecutado localmente, con una capa de gobierno estructurado llamada <strong>SOKIA</strong>.</p>
+
+  <div class="hypothesis">
+    <div class="hypothesis-q">«Un modelo de lenguaje pequeño, gobernado por SOKIA, alcanza una calidad igual o superior a la de un modelo grande comercial sin gobierno.»</div>
+    <div class="hypothesis-implication">
+      <strong>Si es cierta, la consecuencia económica es directa:</strong> el modelo pequeño corre localmente, sin costo por consulta y sin enviar datos del cliente a terceros. El modelo grande cobra por uso y exige enviar la información fuera. En un servicio con información sensible y volumen alto, esa diferencia es estructural. Que el modelo corra en un equipo corriente sin GPU (Ryzen 5, 31 GB RAM) no es un detalle — significa costo de infraestructura marginal.
+    </div>
+  </div>
+
+  <h2 style="margin-top:1.75rem">Qué aísla cada configuración de prueba</h2>
+  <p>Cada caso se resolvió cuatro veces, en condiciones idénticas salvo la capa añadida, para medir el aporte de cada componente de forma independiente:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Brazo</th><th>Configuración</th><th>Qué aísla</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>L0</strong></td><td>Modelo local solo</td><td>Capacidad base del modelo pequeño</td></tr>
+        <tr><td><strong>L1</strong></td><td>Modelo local + recuperación documental (BM25)</td><td>Aporte del corpus de referencia</td></tr>
+        <tr><td><strong>L2</strong></td><td>Modelo local + corpus + gobierno SOKIA</td><td>Aporte del gobierno sobre el corpus</td></tr>
+        <tr><td><strong>B0</strong></td><td>DeepSeek comercial vía API, sin gobierno</td><td>Techo del mercado como referencia</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="margin-top:1.75rem">Los dos dominios elegidos para la prueba</h2>
+  <p>Se eligieron dos dominios <strong>deliberadamente opuestos</strong> para que los resultados fueran informativos en cualquier dirección:</p>
+
+  <div class="domain-grid">
+    <div class="domain-card">
+      <div class="domain-card-tag">E-001 · Dominio propietario</div>
+      <div class="domain-card-title">Automatizaciones Odoo — Moblicentro</div>
+      <p>Código real, en producción, de una empresa de muebles. Convenciones internas, campos personalizados, reglas de negocio propias. Ningún modelo grande tiene este conocimiento porque nunca fue publicado. Escenario de vacío total de información pública.</p>
+    </div>
+    <div class="domain-card">
+      <div class="domain-card-tag">E-002 · Dominio público</div>
+      <div class="domain-card-title">Legislación colombiana para pymes</div>
+      <p>IVA, retención en la fuente, facturación, garantías, protección de datos, prestaciones. Información pública, abundante, con alta probabilidad de estar en el entrenamiento de cualquier modelo grande. Escenario de conocimiento bien cubierto.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 04. EXPERIMENTOS ──────────────────────────────────────── -->
+<section class="section">
+  <h3>04 — La exploración</h3>
+  <h2>Tres experimentos: dos ejecutados, uno bloqueado en espera de validación</h2>
+  <p>Los experimentos no fueron paralelos — fueron secuenciales y cada uno informó al siguiente. Lo que se aprendió en E-001 cambió cómo se diseñó E-002, y E-002 cambió por completo la pregunta de E-003.</p>
+
+  <div class="timeline">
+
+    <!-- E-001 -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot ok"></div>
+        <div class="tl-line-seg"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-header">
+          <span class="tl-label">E-001 — Dominio propietario (Moblicentro)</span>
+          <span class="tl-badge ok">Supported ✓</span>
+        </div>
+        <p class="tl-context">8 casos reales de automatizaciones Odoo en producción. Cada caso usa campos internos, convenciones y reglas de negocio que no existen en ninguna fuente pública. Se aplicó exclusión anti-filtración: el código fuente de cada automatización se excluyó del corpus al evaluar su propio caso. 32 corridas en total.</p>
+        <div class="tl-finding">
+          <strong>Resultado</strong>
+          <div class="tl-scores">
+            <span class="score-pill">L0: 4.0</span>
+            <span class="score-pill">L1: 6.6</span>
+            <span class="score-pill win">L2: 7.6 ← gobernado</span>
+            <span class="score-pill">B0: 6.4 (techo)</span>
+          </div>
+          <p style="margin-top:.75rem;font-size:.88rem">El modelo pequeño gobernado superó al modelo grande comercial por 1.2 puntos. El gobierno aportó +1.0 por encima del corpus solo. En el caso más complejo (10 pasos, anti-recursión, sustitución de materiales), la recuperación documental sola dio 0/12 y el gobierno lo llevó a 9/12. <strong>Las tres hipótesis derivadas se confirmaron.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- E-002 -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot gap"></div>
+        <div class="tl-line-seg"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-header">
+          <span class="tl-label">E-002 — Dominio público (Legislación colombiana)</span>
+          <span class="tl-badge gap">Gap Detected ✓</span>
+        </div>
+        <p class="tl-context">6 casos de legislación colombiana típica de pyme: IVA, retención, facturación electrónica, garantías, habeas data, prima de servicios. Corpus normativo propio construido con textos reales del Estatuto Tributario, Ley 1480 y CST. 24 corridas en total.</p>
+        <div class="tl-finding">
+          <strong>Resultado</strong>
+          <div class="tl-scores">
+            <span class="score-pill win">L0: 8.5 ← modelo solo</span>
+            <span class="score-pill loss">L1: 6.2</span>
+            <span class="score-pill loss">L2: 4.7 ← gobernado</span>
+            <span class="score-pill">B0: 9.2 (techo)</span>
+          </div>
+          <p style="margin-top:.75rem;font-size:.88rem">El modelo base ya sabía derecho colombiano — 8.5/12 sin ningún contexto. El corpus actuó como distractor porque compite con un conocimiento mejor codificado en los pesos del modelo. El frame de gobierno fue mal calibrado para información pública: un caso pasó de 7/12 a <strong>0/12</strong> por exceso de cautela. <strong>Ninguna hipótesis se confirmó — y eso fue la información más valiosa del proyecto.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- E-003 -->
+    <div class="tl-item">
+      <div class="tl-spine">
+        <div class="tl-dot open"></div>
+        <div class="tl-line-seg"></div>
+      </div>
+      <div class="tl-body">
+        <div class="tl-header">
+          <span class="tl-label">E-003 — Triaje legal gobernado</span>
+          <span class="tl-badge pending">Diseñado · Pendiente</span>
+        </div>
+        <p class="tl-context">No mide conocimiento normativo — esa batalla está perdida y documentada. Mide calidad de triaje: detectar el factor oculto, reencuadrar la pregunta equivocada, clasificar correctamente entre rutinario y especial, producir análisis auditable. 5 brazos × 9 casos = 45 corridas.</p>
+        <div class="tl-finding">
+          <strong>Innovación de diseño</strong>
+          <p style="font-size:.88rem">Incluye 3 casos genuinamente rutinarios como controles — sin ellos, un sistema que escalara todo obtendría puntaje perfecto siendo comercialmente inútil. Añade un quinto brazo (modelo grande + gobierno) para probar si SOKIA tiene valor independiente del tamaño del modelo. El bloqueante: los 9 casos requieren validación jurídica de un abogado en ejercicio antes de ejecutarse — sin ese aval, la prueba mediría contra una verdad de referencia construida internamente.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 05. HALLAZGO ──────────────────────────────────────────── -->
+<section class="section">
+  <h3>05 — El hallazgo central</h3>
+  <h2>La hipótesis se confirma, pero de forma condicional</h2>
+
+  <div class="finding-box">
+    <div class="finding-box-header">Síntesis de 56 pruebas controladas</div>
+    <div class="finding-box-body">
+      <p>El gobierno SOKIA es un multiplicador de modelos <strong>cuando el dominio es propietario y el modelo base tiene un vacío real de conocimiento</strong>. En ese contexto, un modelo pequeño local gobernado supera a un modelo grande comercial. No es un multiplicador en dominios de conocimiento general bien cubiertos por el entrenamiento de los modelos grandes — allí el gobierno y la recuperación documental degradan el resultado.</p>
+    </div>
+  </div>
+
+  <p>El gobierno <strong>no aporta conocimiento; amplifica el que existe</strong>. Si no hay nada que amplificar, amplifica el ruido.</p>
+
+  <div class="callout">
+    <p><strong>Consecuencia de diseño:</strong> cada especialista operativo necesita un clasificador de tipo de tarea. Cuando el caso involucra conocimiento propietario del dominio (el historial clínico del trabajador, la cláusula específica del contrato, la condición particular del bien), el gobierno completo. Cuando la consulta es de conocimiento general, el modelo directo. Aplicar el gobierno indiscriminadamente degrada el servicio — y eso está medido.</p>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>El descarte también fue un resultado:</strong> E-002 eliminó la línea de "información legal general" antes de invertir en ella. Eso es exactamente para lo que sirvió el experimento.</p>
+  </div>
+</section>
+
+<!-- 06. MODELO DE OPERACIÓN ───────────────────────────────── -->
+<section class="section">
+  <h3>06 — Modelo de operación</h3>
+  <h2>Abogado en el circuito: el límite regulatorio como ventaja competitiva</h2>
+
+  <p>El ejercicio de la abogacía en Colombia es una profesión regulada. El sistema no dice <strong>qué hacer</strong> — dice <strong>qué se tiene entre manos</strong>. Eso es diagnóstico y preparación, no asesoría. El equivalente al triaje en urgencias: determina si el paciente necesita atención especializada, no si necesita el bisturí de tal o cual especialidad.</p>
+
+  <p>El modelo propuesto convierte al abogado de competidor potencial en socio estructural:</p>
+
+  <div class="phase-list">
+    <div class="phase-item">
+      <div class="phase-num">1</div>
+      <div class="phase-text">
+        <strong>Validación total</strong>
+        El abogado revisa el 100% de los casos. Cada revisión genera datos: dónde el sistema acertó, dónde falló. En meses se construye un mapa real de confiabilidad por tipo de caso dentro de cada dominio.
+      </div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">2</div>
+      <div class="phase-text">
+        <strong>Validación por niveles</strong>
+        Con el historial, los casos rutinarios sin señales de alarma pasan con verificación rápida. Los casos con factores especiales van a revisión completa. El abogado deja de ser cuello de botella y pasa a supervisor calibrado.
+      </div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">3</div>
+      <div class="phase-text">
+        <strong>Escala</strong>
+        El volumen crece sin crecer proporcionalmente en abogados, porque la fracción auto-despachada aumenta. Los casos se repiten: en pymes colombianas, el grueso serán liquidaciones laborales, arrendamientos vencidos, garantías de consumidor y protección de datos. Ese núcleo repetitivo es el primero en volverse auto-validable.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>El riesgo que decide todo:</strong> el modo de falla peligroso no es que el sistema responda mal un caso difícil — para eso está el abogado. Es que un caso especial se disfrace de rutinario y pase auto-validado. La liquidación "estándar" de la empleada que resulta estar embarazada. Medir esa tasa de error es exactamente el objeto del E-003.</p>
+  </div>
+</section>
+
+<!-- 07. ESTADO ────────────────────────────────────────────── -->
+<section class="section">
+  <h3>07 — Estado y ruta crítica</h3>
+  <h2>Dónde está el proyecto hoy</h2>
+
+  <div class="status-list">
+    <div class="status-row"><span class="status-label">Plataforma experimental — indexación, ejecución, evaluación</span><span class="status-tag tag-done">Operativa</span></div>
+    <div class="status-row"><span class="status-label">E-001 — dominio propietario (32 corridas)</span><span class="status-tag tag-done">Supported ✓</span></div>
+    <div class="status-row"><span class="status-label">E-002 — legislación colombiana (24 corridas)</span><span class="status-tag tag-done">Gap Detected ✓</span></div>
+    <div class="status-row"><span class="status-label">Síntesis cruzada y hallazgo central</span><span class="status-tag tag-done">Documentado</span></div>
+    <div class="status-row"><span class="status-label">Instrumentos de validación con abogado</span><span class="status-tag tag-done">Listos</span></div>
+    <div class="status-row"><span class="status-label">E-003 — triaje legal (45 corridas)</span><span class="status-tag tag-blocked">Bloqueado</span></div>
+    <div class="status-row"><span class="status-label">Validación de mercado — entrevistas a pymes</span><span class="status-tag tag-pending">No iniciada</span></div>
+  </div>
+
+  <h2 style="margin-top:1.75rem">Los cuatro pasos que reducen incertidumbre a costo casi cero</h2>
+
+  <div class="phase-list">
+    <div class="phase-item">
+      <div class="phase-num">1</div>
+      <div class="phase-text"><strong>Validación jurídica de los casos (sesión con abogado)</strong> Desbloquea E-003. La sesión está preparada — hay un instrumento de entrevista estructurado que fuerza la lectura independiente antes de mostrar el análisis propuesto.</div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">2</div>
+      <div class="phase-text"><strong>Ejecución de E-003</strong> ~6 horas de cómputo, costo marginal. Produce la métrica que determina si el modelo de validación por niveles es viable.</div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">3</div>
+      <div class="phase-text"><strong>Entrevistas de validación de problema</strong> Con profesionales del derecho que no sean el validador. Objetivo: gasto actual en triaje y errores, no disposición hipotética a pagar.</div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">4</div>
+      <div class="phase-text"><strong>Piloto acotado</strong> Con el abogado validador como primer usuario real en el dominio con mayor volumen identificado en el paso 3.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 08. RIESGOS ───────────────────────────────────────────── -->
+<section class="section">
+  <h3>08 — Riesgos declarados</h3>
+  <h2>Lo que la evidencia técnica no prueba</h2>
+
+  <div class="risk-list">
+    <div class="risk-item">
+      <div class="risk-dot h"></div>
+      <div><strong>No hay validación de demanda.</strong> Nadie ha manifestado disposición a pagar. Es el riesgo principal — no de viabilidad técnica, sino comercial. El paso 3 de la ruta crítica lo ataca directamente.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot m"></div>
+      <div><strong>Los modelos grandes mejoran y abaratan continuamente.</strong> E-003 aborda esto con el quinto brazo (modelo grande + SOKIA): si el gobierno mejora también al modelo grande, el gobierno tiene valor propio independiente del tamaño.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot m"></div>
+      <div><strong>Dependencia de conseguir y retener abogados validadores.</strong> Mitigable con vinculación temprana como socios, no como proveedores externos.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot l"></div>
+      <div><strong>14 casos en total, una corrida por brazo.</strong> No hay medición de varianza. Los resultados establecen dirección e informan decisiones, pero no son estadísticamente concluyentes en magnitud exacta.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot l"></div>
+      <div><strong>Nicho aún no definido dentro de los cinco dominios.</strong> La dirección es correcta pero cuál dominio tiene mayor volumen y disposición de pago en el mercado colombiano requiere las entrevistas del paso 3.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 09. VALORACIÓN ────────────────────────────────────────── -->
+<section class="section">
+  <h3>09 — Valoración</h3>
+  <h2>Lo que está probado y lo que no</h2>
+
+  <div class="callout">
+    <p><strong>Lo probado:</strong> existe una configuración técnica en la que un modelo pequeño ejecutado localmente — sin costo por consulta y sin enviar información a terceros — supera a un modelo grande comercial. Está medido, es reproducible, y funciona en hardware corriente. También está probado, con la misma rigurosidad, dónde no funciona, lo que evitó invertir en una línea inviable.</p>
+  </div>
+
+  <div class="callout warn">
+    <p><strong>Lo no probado:</strong> que exista un mercado dispuesto a pagar por ello. Ese es el vacío que la secuencia propuesta ataca con costo cercano a cero.</p>
+  </div>
+
+  <p>La decisión de comprometer recursos significativos debería tomarse después del paso 3 de la ruta crítica — cuando haya evidencia de demanda real, no solo de viabilidad técnica.</p>
+</section>
+
+<footer>
+  Reporte técnico de viabilidad · Proyecto Agente Especializado SOKIA · 2026<br>
+  Confidencial — uso exclusivo del evaluador autorizado · 56 pruebas auditables en repositorio privado
+</footer>
+
+<script>
+function toggleTheme(){
+  const r = document.documentElement;
+  const cur = r.getAttribute('data-theme');
+  const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  if(!cur){ r.setAttribute('data-theme', sys==='dark' ? 'light' : 'dark'); }
+  else if(cur==='dark'){ r.setAttribute('data-theme','light'); }
+  else { r.removeAttribute('data-theme'); }
+}
+</script>
