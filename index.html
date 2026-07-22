@@ -1000,6 +1000,80 @@ footer {
   <p>Los cinco especialistas propuestos (arrendamientos, contratación laboral, propiedad horizontal, sucesiones, procesos ejecutivos) aplican el mismo principio: cada uno conoce su proceso de punta a punta, comparte el núcleo SOKIA, y tiene su propio conocimiento de dominio, sus reglas y sus flujos de trabajo calibrados.</p>
 </section>
 
+<!-- 13. INFRAESTRUCTURA ─────────────────────────────────────── -->
+<section class="section">
+  <h3>13 — La infraestructura que la visión exige</h3>
+  <h2>El núcleo de IA es liviano. La plataforma que lo rodea no lo es.</h2>
+
+  <p>Los experimentos E-001 y E-002 validaron el núcleo de razonamiento: un modelo pequeño gobernado por SOKIA, corriendo en hardware corriente sin GPU. Esa capa es barata y reproducible. Pero las secciones 11 y 12 describen algo cualitativamente diferente — una plataforma que captura fotos de cédulas, almacena escrituras y contratos, mantiene perfiles de propietarios, arrendatarios e inmuebles, y gestiona procesos legales con consecuencias reales para personas reales.</p>
+
+  <div class="callout warn">
+    <p><strong>Ese salto no es incremental.</strong> Una plataforma que maneja documentos de identidad y expedientes legales tiene las mismas obligaciones que una entidad financiera: no porque sea una aspiración, sino porque la Ley 1581 de Habeas Data y la responsabilidad civil lo exigen.</p>
+  </div>
+
+  <h2 style="margin-top:1.75rem">Lo que una plataforma de este tipo requiere</h2>
+
+  <div class="risk-list">
+    <div class="risk-item">
+      <div class="risk-dot h"></div>
+      <div><strong>Cifrado en reposo y en tránsito.</strong> Cada documento — cédula, escritura, contrato — debe estar cifrado en almacenamiento y en transmisión. Una filtración de datos de identidad en un contexto legal es un daño irreparable para el cliente y una responsabilidad directa del operador.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot h"></div>
+      <div><strong>Aislamiento multi-tenant estricto.</strong> Los datos de una inmobiliaria no pueden ser accesibles desde otra. El error de diseño más común en plataformas SaaS es que la separación entre tenants es lógica, no física — y eso no es suficiente para datos legales.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot h"></div>
+      <div><strong>Trazabilidad de auditoría completa.</strong> Quién accedió a qué documento, cuándo y desde dónde. En un proceso legal, esa bitácora puede ser requerida por un juez. Si no existe, el operador asume la carga de la prueba.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot m"></div>
+      <div><strong>Gestión de identidad robusta.</strong> Autenticación de dos factores mínimo. Para clientes corporativos, control de roles y permisos por usuario. No basta usuario y contraseña.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot m"></div>
+      <div><strong>Retención y eliminación controlada.</strong> El titular de los datos tiene derecho a su eliminación (Ley 1581). El sistema debe poder borrar un expediente completo — incluyendo backups — de forma verificable.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot m"></div>
+      <div><strong>Disponibilidad y recuperación ante fallos.</strong> Si el sistema cae durante un proceso de firma o renovación, hay consecuencias contractuales reales. Se necesita redundancia, backups automatizados y un RTO definido.</div>
+    </div>
+    <div class="risk-item">
+      <div class="risk-dot l"></div>
+      <div><strong>Política de seguridad documentada.</strong> Para vender a empresas medianas, el área de TI o el revisor fiscal pedirá una política de seguridad. Sin ese documento, la negociación comercial se traba antes de empezar.</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:1.75rem">Dos fases claramente separadas</h2>
+  <p>La distinción es importante para no mezclar lo que cuesta poco con lo que cuesta mucho:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Fase</th><th>Qué incluye</th><th>Costo</th><th>Cuándo hacerlo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Validación</strong></td>
+          <td>E-003, entrevistas de mercado, piloto con abogado, prototipo funcional sin datos reales de clientes</td>
+          <td>Marginal</td>
+          <td>Ahora — antes de comprometer recursos</td>
+        </tr>
+        <tr>
+          <td><strong>Plataforma</strong></td>
+          <td>Infraestructura segura, cifrado, multi-tenant, auditoría, cumplimiento Habeas Data, disponibilidad</td>
+          <td>Significativo</td>
+          <td>Después de validar demanda real con disposición a pagar</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <p><strong>La infraestructura de seguridad no es un obstáculo — es una barrera de entrada.</strong> Quien la construya bien la primera vez tiene una ventaja que un competidor pequeño no puede replicar rápidamente. Pero construirla antes de saber si hay mercado es el error más caro que puede cometer un proyecto en esta etapa. La secuencia importa.</p>
+  </div>
+</section>
+
 <footer>
   Reporte técnico de viabilidad · Proyecto Agente Especializado SOKIA · 2026<br>
   Confidencial — uso exclusivo del evaluador autorizado · 56 pruebas auditables en repositorio privado
