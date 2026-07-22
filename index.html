@@ -845,6 +845,161 @@ footer {
   </div>
 </section>
 
+<!-- 11. CAPTURA DE DATOS ────────────────────────────────────── -->
+<section class="section">
+  <h3>11 — El obstáculo de captura</h3>
+  <h2>El formulario mata la adopción antes de que el servicio empiece</h2>
+
+  <p>Existe un bloqueante de experiencia de usuario que no tiene que ver con la IA y que puede hundir la adopción: el ingreso de datos. Si una persona llega pensando <em>"necesito revisar este contrato"</em> y la plataforma le muestra cuarenta casillas para llenar, es muy probable que abandone. El formulario de solicitud de visa a Estados Unidos es el ejemplo extremo — no porque sea difícil, sino porque la percepción de esfuerzo destruye la intención antes de empezar.</p>
+
+  <div class="callout warn">
+    <p><strong>El problema de diseño central:</strong> el sistema necesita información para hacer triaje de calidad. El usuario no quiere dar información — quiere que el sistema "entienda su caso". Resolver esa tensión es un problema de diseño de proceso, no de modelo de IA.</p>
+  </div>
+
+  <h2 style="margin-top:1.75rem">Captura por documento, no por campo</h2>
+  <p>En lugar de pedir datos, el sistema pide documentos — que el usuario ya tiene en la mano — y extrae los datos automáticamente. El flujo para un arrendamiento nuevo:</p>
+
+  <div class="phase-list">
+    <div class="phase-item">
+      <div class="phase-num">📷</div>
+      <div class="phase-text">
+        <strong>Cédula del cliente</strong>
+        El sistema extrae nombre, número de identificación, fecha y lugar de expedición. Muestra el resultado: <em>"¿Es correcto?"</em> — un clic.
+      </div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">📷</div>
+      <div class="phase-text">
+        <strong>Escritura o certificado de tradición</strong>
+        Extrae dirección, matrícula inmobiliaria, área, propietario registrado.
+      </div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">📷</div>
+      <div class="phase-text">
+        <strong>Contrato anterior (si existe)</strong>
+        Reutiliza cláusulas, nombres, plazos, cánones. Ya no hace falta transcribir nada.
+      </div>
+    </div>
+    <div class="phase-item">
+      <div class="phase-num">✏️</div>
+      <div class="phase-text">
+        <strong>Solo lo que cambió</strong>
+        Al final el sistema pregunta únicamente por los cambios respecto al contrato anterior — normalmente el canon, la duración o el arrendatario. El resto ya está.
+      </div>
+    </div>
+  </div>
+
+  <p>El acceso a la cámara del celular ocurre vía QR: el operador escanea desde el computador y el celular del cliente se convierte en el escáner. Sin instalar nada.</p>
+
+  <h2 style="margin-top:1.75rem">Asistente conversacional multimodal</h2>
+  <p>El flujo ideal no es "subir documentos" — es que el sistema acompañe al usuario paso a paso, como lo hace una aplicación bancaria para apertura de cuenta:</p>
+
+  <div class="callout neutral">
+    <p style="font-family: Cambria, Georgia, serif; font-style: italic; font-size: 1rem; line-height: 1.8">
+      "Muéstreme su cédula." 📷<br>
+      "Gírela un poco — hay brillo en la esquina." 📷<br>
+      "Perfecto. Ahora el certificado de tradición." 📷<br>
+      "Ahora dígame con su voz cuánto será el canon." 🎤<br>
+      "Entendido. Ya tengo el 90 % del caso."
+    </p>
+  </div>
+
+  <p>El sistema da retroalimentación en tiempo real sobre la calidad de la captura antes de continuar. El usuario nunca siente que está llenando un formulario — siente que está siendo guiado.</p>
+
+  <h2 style="margin-top:1.75rem">SOKIA como memoria del cliente</h2>
+  <p>Cada interacción construye un perfil estructurado que persiste. La segunda vez que el cliente usa la plataforma, el sistema no vuelve a pedir la cédula:</p>
+
+  <div class="callout neutral">
+    <p><em>"¿Siguen siendo estos sus datos?"</em> — un clic.</p>
+  </div>
+
+  <p>Para clientes corporativos (una inmobiliaria, una empresa de recursos humanos) el efecto es más profundo: 300 inmuebles registrados, 1.500 propietarios, 2.000 arrendatarios. Cuando quieren procesar un nuevo caso: <em>"Seleccione el inmueble."</em> Ya. No vuelven a capturar nada que ya esté en el sistema.</p>
+
+  <h2 style="margin-top:1.75rem">Captura conversacional libre</h2>
+  <p>El canal más natural es la conversación. Si el sistema le dice al usuario <em>"cuénteme qué necesita"</em> y el usuario habla libremente durante cinco minutos, SOKIA puede construir en segundo plano una ficha estructurada completa sin que el usuario haya diligenciado un solo campo.</p>
+
+  <div class="finding-box" style="margin:1.25rem 0">
+    <div class="finding-box-header">Ficha construida automáticamente desde conversación libre</div>
+    <div class="finding-box-body">
+      <div class="table-wrap" style="margin:0">
+        <table>
+          <tbody>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Tipo de documento</td><td>Contrato de arrendamiento</td></tr>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Arrendador</td><td>William Camacho</td></tr>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Inmueble</td><td>Apartamento · Bogotá</td></tr>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Canon</td><td>$1.800.000 / mes</td></tr>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Duración</td><td>12 meses</td></tr>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Mascotas</td><td>Sí</td></tr>
+            <tr><td style="color:var(--text-muted);font-size:.83rem">Fiador</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.83rem;margin-top:.75rem;color:var(--text-muted)">Al final el sistema solo pregunta: <em>"Estas son las cuatro cosas que todavía necesito."</em></p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>El hallazgo de diseño:</strong> si el usuario siente que <em>"la IA entendió mi caso"</em> en lugar de <em>"estoy diligenciando un formulario"</em>, la adopción cambia completamente. Esa ventaja no proviene del modelo de IA — proviene del diseño del proceso. Y es exactamente el rol para el que SOKIA fue concebido: gobernar la interacción y la captura inteligente de información antes de que el análisis empiece.</p>
+  </div>
+</section>
+
+<!-- 12. EL PROCESO, NO EL DOCUMENTO ────────────────────────── -->
+<section class="section">
+  <h3>12 — La propuesta de valor real</h3>
+  <h2>El producto no es el contrato. Es el proceso completo.</h2>
+
+  <p>Para un cliente que maneja cientos de contratos, el contrato no es el problema. Es solo una consecuencia de un proceso de negocio. Una inmobiliaria, por ejemplo, necesita gestionar:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Etapa del proceso</th></tr></thead>
+      <tbody>
+        <tr><td class="num">01</td><td>Captación del inmueble</td></tr>
+        <tr><td class="num">02</td><td>Registro del propietario</td></tr>
+        <tr><td class="num">03</td><td>Documentación del inmueble</td></tr>
+        <tr><td class="num">04</td><td>Estudio del arrendatario</td></tr>
+        <tr><td class="num">05</td><td>Elaboración del contrato</td></tr>
+        <tr><td class="num">06</td><td>Inventario de entrega</td></tr>
+        <tr><td class="num">07</td><td>Firma</td></tr>
+        <tr><td class="num">08</td><td>Recaudo de cánones</td></tr>
+        <tr><td class="num">09</td><td>Renovaciones e incrementos anuales</td></tr>
+        <tr><td class="num">10</td><td>Terminaciones</td></tr>
+        <tr><td class="num">11</td><td>Entrega del inmueble</td></tr>
+        <tr><td class="num">12</td><td>Gestión de conflictos</td></tr>
+        <tr><td class="num">13</td><td>Archivo documental</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn" style="margin-top:1rem">
+    <p><strong>El contrato representa el 5–10 % de ese flujo.</strong> Vender "un generador de contratos" es entrar por la puerta más pequeña del proceso.</p>
+  </div>
+
+  <p>Lo mismo ocurre en otros sectores. Una empresa de recursos humanos no quiere solo contratos laborales — también necesita afiliaciones, otrosíes, cartas disciplinarias, liquidaciones, certificaciones y seguimiento de vencimientos. Un despacho jurídico no quiere solo redactar demandas — también necesita administrar expedientes, controlar términos y coordinar tareas.</p>
+
+  <h2 style="margin-top:1.75rem">La entrada correcta: una intención, no un formulario</h2>
+  <p>El punto de partida no es <em>"necesito un contrato"</em>. Es <em>"voy a arrendar este apartamento"</em>. A partir de esa única intención, el especialista operativo guía el proceso completo:</p>
+
+  <div class="phase-list">
+    <div class="phase-item"><div class="phase-num">1</div><div class="phase-text"><strong>Captura la información del inmueble</strong> — por cámara o desde el perfil corporativo.</div></div>
+    <div class="phase-item"><div class="phase-num">2</div><div class="phase-text"><strong>Registra o selecciona al propietario</strong> — desde la base de datos existente con un clic.</div></div>
+    <div class="phase-item"><div class="phase-num">3</div><div class="phase-text"><strong>Evalúa la documentación requerida</strong> — identifica qué falta antes de avanzar.</div></div>
+    <div class="phase-item"><div class="phase-num">4</div><div class="phase-text"><strong>Genera el estudio del arrendatario</strong> — detecta factores de riesgo en la documentación presentada.</div></div>
+    <div class="phase-item"><div class="phase-num">5</div><div class="phase-text"><strong>Produce el contrato</strong> — con las cláusulas correspondientes al caso específico.</div></div>
+    <div class="phase-item"><div class="phase-num">6</div><div class="phase-text"><strong>Genera el inventario con fotografías</strong> — usando la misma cámara del celular.</div></div>
+    <div class="phase-item"><div class="phase-num">7</div><div class="phase-text"><strong>Coordina la firma electrónica</strong> — sin salir del flujo.</div></div>
+    <div class="phase-item"><div class="phase-num">8</div><div class="phase-text"><strong>Programa el incremento anual</strong> — automáticamente, según el IPC o el acuerdo pactado.</div></div>
+    <div class="phase-item"><div class="phase-num">9</div><div class="phase-text"><strong>Genera la renovación o la terminación cuando corresponde</strong> — sin que nadie tenga que recordar la fecha.</div></div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Consecuencia estratégica:</strong> las empresas compran soluciones que resuelven procesos completos, no herramientas aisladas. Un especialista operativo que conoce el flujo completo de su dominio compite en una categoría diferente a la de un generador de documentos. No compite en precio — compite en el costo de no tenerlo.</p>
+  </div>
+
+  <p>Los cinco especialistas propuestos (arrendamientos, contratación laboral, propiedad horizontal, sucesiones, procesos ejecutivos) aplican el mismo principio: cada uno conoce su proceso de punta a punta, comparte el núcleo SOKIA, y tiene su propio conocimiento de dominio, sus reglas y sus flujos de trabajo calibrados.</p>
+</section>
+
 <footer>
   Reporte técnico de viabilidad · Proyecto Agente Especializado SOKIA · 2026<br>
   Confidencial — uso exclusivo del evaluador autorizado · 56 pruebas auditables en repositorio privado
